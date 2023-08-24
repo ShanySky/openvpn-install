@@ -1144,7 +1144,7 @@ verb 3" >>/etc/openvpn/client-template.txt
 				mv /etc/pam.d/openvpn /etc/pam.d/openvpn.bak
 			fi
 			echo "# google auth
-auth        required    /usr/local/lib/security/pam_google_authenticator.so secret=/etc/openvpn/clients/\$\{USER\}/.google_authenticator
+auth        required    /usr/local/lib/security/pam_google_authenticator.so secret=/var/openvpn/clients/\${USER}/.google_authenticator
 auth        required    pam_tally2.so onerr=fail deny=6 unlock_time=600
 account     required    pam_tally2.so
 account     required    pam_nologin.so
@@ -1205,7 +1205,7 @@ function newClient() {
 	# checking if the configuration file of the OpenVPN server contains the specified configuration item.
 	if grep -Pqs '^\s*plugin /usr/lib64/openvpn/plugins/openvpn-plugin-auth-pam\.so\s+openvpn(?:\s*(?:;|#).*)?$' /etc/openvpn/server.conf; then
 		enable_2factor=true
-		local client_otp_path="/etc/openvpn/clients/${CLIENT}"
+		local client_otp_path="/var/openvpn/clients/${CLIENT}"
 		mkdir -p "$client_otp_path"
 		# create a new local user
 		local client_pass

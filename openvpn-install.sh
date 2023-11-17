@@ -343,8 +343,9 @@ function installQuestions() {
 	echo "   11) AdGuard DNS (Anycast: worldwide)"
 	echo "   12) NextDNS (Anycast: worldwide)"
 	echo "   13) Custom"
-	until [[ $DNS =~ ^[0-9]+$ ]] && [ "$DNS" -ge 1 ] && [ "$DNS" -le 13 ]; do
-		read -rp "DNS [1-12]: " -e -i 11 DNS
+	echo "   14) None"
+	until [[ $DNS =~ ^[0-9]+$ ]] && [ "$DNS" -ge 1 ] && [ "$DNS" -le 14 ]; do
+		read -rp "DNS [1-12]: " -e -i 14 DNS
 		if [[ $DNS == 2 ]] && [[ -e /etc/unbound/unbound.conf ]]; then
 			echo ""
 			echo "Unbound is already installed."
@@ -1065,7 +1066,7 @@ WantedBy=multi-user.target" >/etc/systemd/system/iptables-openvpn.service
 	
 	if [[ $OS == 'centos' ]]; then
 	    /etc/iptables/add-openvpn-rules.sh
-		sed -i '/\/etc\/iptables\/add-openvpn-rules.sh/d' /etc/rc.d/rc.local
+		sed -i '|/etc/iptables/add-openvpn-rules.sh|d' /etc/rc.d/rc.local
 		echo "/etc/iptables/add-openvpn-rules.sh" >> /etc/rc.d/rc.local
 		chmod +x /etc/rc.d/rc.local
 	else
@@ -1216,7 +1217,7 @@ function newClient() {
 		local random_mark
 		random_mark=$(head -n 4096 /dev/urandom | tr -dc a-zA-Z0-9 | cut -b 1-20)
 		cp /etc/pam.d/su "/etc/pam.d/su.$random_mark.bak"
-		sed -i '/^\s*[^#]*pam_wheel\.so/s/^/#/g' /etc/pam.d/su
+		sed -i 's/^\s*[^#]*pam_wheel\.so/#&/' /etc/pam.d/su
 		# run the google authenticator as the local user and save the code
 		su "${CLIENT}" -c "/usr/local/bin/google-authenticator -C -t -f -D -r 3 -Q UTF8 -R 30 -w3" >"$client_otp_path/authenticator_code.txt"
 		cp -f "/etc/pam.d/su.$random_mark.bak" /etc/pam.d/su
@@ -1365,7 +1366,7 @@ function revokeClient() {
 
 function removeUnbound() {
 	# Remove OpenVPN-related config
-	sed -i '/include: \/etc\/unbound\/openvpn.conf/d' /etc/unbound/unbound.conf
+	sed -i '|include: /etc/unbound/openvpn.conf|d' /etc/unbound/unbound.conf
 	rm /etc/unbound/openvpn.conf
 
 	until [[ $REMOVE_UNBOUND =~ (y|n) ]]; do
@@ -1426,7 +1427,7 @@ function removeOpenVPN() {
 	
 		if [[ $OS == 'centos' ]]; then
 			/etc/iptables/rm-openvpn-rules.sh
-			sed -i '/\/etc\/iptables\/add-openvpn-rules.sh/d' /etc/rc.d/rc.local
+			sed -i '|/etc/iptables/add-openvpn-rules.sh|d' /etc/rc.d/rc.local
 		else
 			# Remove the iptables rules related to the script
 			systemctl stop iptables-openvpn

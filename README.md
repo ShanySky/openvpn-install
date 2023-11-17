@@ -34,6 +34,8 @@
 
 4. 在服务端配置中增加重新协商密钥的间隔时间参数“reneg-sec”，间隔时间调整为3小时；
 
+5. 增加一个不设置DNS的安装选项，同时将其设置为默认选项。
+
 ## 4 离线安装
 
 脚本中有两个组件需要从github下载或clone，在某些网络环境下访问github可能会出现连接不上或是不稳定的问题，因此在本脚本中允许提前下载这两个组件的压缩包，提供了离线安装的功能。  
@@ -44,4 +46,10 @@
    
    *说明：google-authenticator-libpam 是开启双因子验证的必备组件，脚本中通过 clone [GitHub - google/google-authenticator-libpam](https://github.com/google/google-authenticator-libpam) 编译安装。压缩包的名称只要以 google-authenticator-libpam 开头，.tar.gz 结尾即可，例如：google-authenticator-libpam.tar.gz、google-authenticator-libpam-1.09.tar.gz*
 
-# 
+## 5 常用命令
+
+1. 启动openvpn-server服务：systemctl start openvpn-server@server
+
+2. 停止openvpn-server服务：systemctl stop openvpn-server@server
+
+3. 重启openvpn-server服务：systemctl restart openvpn-server@server
